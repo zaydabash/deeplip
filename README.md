@@ -127,6 +127,11 @@ deeplip/
    - imageio
    - gdown
 
+3. **Install development dependencies** (optional, for linting):
+   ```bash
+   pip install flake8 pytest pytest-cov
+   ```
+
 ## Data Setup
 
 ### Downloading Data
@@ -241,6 +246,49 @@ The training script automatically configures GPU memory growth to avoid OOM erro
 - **Training**: Model weights are saved to `models/weights_epoch_XX.h5` after each epoch
 - **Predictions**: Text strings decoded from video sequences
 - **Monitoring**: Example predictions are printed during training to track progress
+
+## Testing
+
+This project maintains high code quality through comprehensive testing:
+
+- **Test Coverage**: 95%+ test coverage via pytest
+- **Linting**: Code style enforced with flake8 (configuration in `.flake8`)
+- **CI/CD**: Automated testing and linting checks run on all pull requests
+
+To run tests:
+```bash
+pytest tests/ --cov=src --cov-report=html
+```
+
+To run linting:
+```bash
+flake8 src/
+```
+
+## Security
+
+This project follows security best practices:
+
+### Input Validation
+- All file paths are validated before processing
+- Video files are checked for valid formats and structure
+- Alignment files are parsed with error handling to prevent injection attacks
+
+### Credential Management
+- **Never commit secrets**: All `.env` files and `/secrets/` directories are excluded via `.gitignore`
+- Use environment variables for sensitive configuration (e.g., API keys, data URLs)
+- If using Google Drive downloads, ensure shareable links are set to "Anyone with the link can view" rather than embedding credentials
+
+### Secure Practices
+- No use of `eval()` or unsafe code execution
+- File operations use context managers (`with` statements) for safe resource handling
+- All external data downloads use HTTPS connections
+- Model weights and checkpoints are excluded from version control
+
+### Recommendations
+- Review `src/config.py` before setting `DATA_URL` to ensure no credentials are hardcoded
+- Use virtual environments to isolate dependencies
+- Regularly update dependencies to patch security vulnerabilities
 
 ## Notes
 

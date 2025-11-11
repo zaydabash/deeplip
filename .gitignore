@@ -40,6 +40,16 @@ env/
 ENV/
 .venv
 
+# Secrets and environment variables
+.env
+.env.local
+.env.*.local
+/secrets/
+secrets/
+*.key
+*.pem
+*.p12
+
 # Jupyter
 .ipynb_checkpoints/
 

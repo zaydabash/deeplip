@@ -1,0 +1,36 @@
+[flake8]
+# Maximum line length
+max-line-length = 100
+
+# Exclude directories
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    env,
+    ENV,
+    build,
+    dist,
+    *.egg-info,
+    .eggs,
+    models,
+    data,
+    downloads
+
+# Ignore specific error codes
+# E501: line too long (handled by max-line-length)
+# W503: line break before binary operator (conflicts with E501)
+# E203: whitespace before ':' (conflicts with black formatter)
+ignore = 
+    E203,
+    E501,
+    W503
+
+# Maximum complexity
+max-complexity = 15
+
+# Per-file ignores
+per-file-ignores =
+    __init__.py:F401
+
