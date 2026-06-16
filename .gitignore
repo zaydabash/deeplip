@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Model weights and checkpoints
+models/*.h5
+models/*.ckpt
+models/*.pb
+
+# Data directories
+data/
+downloads/
+*.zip
+*.crdownload
+
+# Training logs
+training_log.txt
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+venv/
+env/
+ENV/
+.venv
+
+# Secrets and environment variables
+.env
+.env.local
+.env.*.local
+/secrets/
+secrets/
+*.key
+*.pem
+*.p12
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Test artifacts
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Temporary files
+*.tmp
+*.bak
+
