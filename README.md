@@ -16,6 +16,12 @@
 
 An end-to-end deep learning project for lip reading from video, designed for accessibility applications. This project implements a Conv3D + Bidirectional LSTM + CTC architecture similar to LipNet, capable of transcribing speech from mouth region video clips.
 
+<div align="center">
+  <img src="docs/demo.gif" alt="Preprocessed mouth region the model reads from" width="320"/>
+  <br/>
+  <em>The preprocessed mouth region (grayscale, cropped, normalized) that the model reads from.</em>
+</div>
+
 ## Overview
 
 This project builds a machine learning model that can read lips from video sequences (mouth region only). The model uses:
@@ -328,13 +334,7 @@ license covers this repository's code only, not any third-party data.
 
 ## Demo / Example
 
-The model reads from the preprocessed mouth region only. Below is a sample of what it sees
-(grayscale, cropped, normalized) for one GRID clip:
-
-<div align="center">
-  <img src="docs/demo.gif" alt="Preprocessed mouth region" width="280"/>
-</div>
-
+The clip at the top of this README shows the preprocessed mouth region the model reads from.
 Example predictions from a model trained on GRID speaker `s1`:
 
 ```
