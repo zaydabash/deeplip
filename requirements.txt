@@ -4,4 +4,5 @@ opencv-python>=4.6.0
 matplotlib>=3.5.0
 imageio>=2.19.0
 gdown>=4.6.0
+requests>=2.28.0
 

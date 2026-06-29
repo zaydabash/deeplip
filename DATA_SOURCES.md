@@ -75,12 +75,12 @@ Regardless of source, your data should follow this structure:
 
 ```
 data/
-├── S1/              # Speaker 1 (or any speaker ID)
+├── s1/              # Speaker 1 (GRID speaker IDs are lowercase s1..s34)
 │   ├── video1.mpg
 │   ├── video2.mpg
 │   └── ...
 └── alignments/
-    └── S1/
+    └── s1/
         ├── video1.align
         ├── video2.align
         └── ...
@@ -107,9 +107,9 @@ Example:
 
 If you just want to test the code, create a minimal dataset:
 
-1. Create `data/S1/` directory
+1. Create `data/s1/` directory
 2. Add at least 2-3 video files (`.mpg` format)
-3. Create `data/alignments/S1/` directory
+3. Create `data/alignments/s1/` directory
 4. Add corresponding `.align` files
 5. Run training with a small number of epochs
 

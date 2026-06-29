@@ -56,7 +56,7 @@ def fetch_file(key, expected_size):
         )
         subprocess.run(
             [
-                "curl.exe",
+                "curl",
                 "-L",
                 "--fail",
                 "--retry", "100",

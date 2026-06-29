@@ -30,7 +30,7 @@ def setup_gpu():
         print("No GPU found, using CPU")
 
 
-def main(video_pattern="data/S1/*.mpg", epochs=EPOCHS):
+def main(video_pattern="data/s1/*.mpg", epochs=EPOCHS):
     """Train the model on clips matching video_pattern.
 
     The first TRAIN_SIZE clips form the training split and the remainder form
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train the lip-reading model.")
     parser.add_argument(
         "--video_pattern",
-        default="data/S1/*.mpg",
+        default="data/s1/*.mpg",
         help="Glob pattern for video files.",
     )
     parser.add_argument(
