@@ -232,12 +232,39 @@ Arguments:
 - `--weights`: Path to model weights file (default: `models/weights_epoch_01.h5`). Checkpoints are
   written as `weights_epoch_NN.h5` after each training epoch; point this at whichever epoch you
   want to load.
+- `--decoding`: CTC decoding strategy, `greedy` or `beam` (default: `greedy`). Beam search explores
+  multiple candidate paths instead of always taking the single most likely character at each
+  timestep, which tends to do better on short or ambiguous tokens (single letters, digits).
+- `--beam_width`: Search width for beam-search decoding, ignored when `--decoding greedy` (default:
+  `100`, see `BEAM_WIDTH` in `src/config.py`).
+
+```bash
+python -m src.predict path/to/video.mpg --weights models/weights_epoch_50.h5 --decoding beam
+```
 
 The script will:
 1. Load the trained model
 2. Preprocess the video (grayscale, crop mouth region, normalize)
-3. Run inference using CTC decoding
+3. Run inference using CTC decoding (greedy or beam search)
 4. Print the predicted text
+
+### Evaluation
+
+`eval_sample.py` runs a checkpoint over a sample of clips and reports word error rate (WER) and
+character error rate (CER) against the real `.align` transcripts, using `src/metrics.py`:
+
+```bash
+python eval_sample.py --weights models/weights_epoch_41.h5 --pattern "data/s1/*.mpg" --num 10
+```
+
+`src/metrics.py` also works standalone, if you want to score predictions some other way:
+
+```python
+from src.metrics import word_error_rate, character_error_rate
+
+word_error_rate("set blue at one please", "set red at one please")       # 0.2
+character_error_rate("bin blue", "bin glue")                              # 0.125
+```
 
 ### Visualization
 
@@ -272,8 +299,8 @@ The training script automatically configures GPU memory growth to avoid OOM erro
 ## Testing
 
 - **Automated test suite**: A pytest suite lives under `tests/`, covering `config`, `data`,
-  `dataset`, `model`, `losses`, `callbacks`, `predict`, `train`, and `visualize` (51 tests,
-  93% coverage of `src/`). All fixtures are synthetic (generated on the fly with OpenCV), so
+  `dataset`, `model`, `losses`, `callbacks`, `predict`, `train`, `visualize`, and `metrics` (64
+  tests, 93% coverage of `src/`). All fixtures are synthetic (generated on the fly with OpenCV), so
   the suite runs fully offline without the gitignored `data/` directory. Run it with:
   ```bash
   pip install -r requirements-dev.txt
@@ -321,7 +348,8 @@ This project follows security best practices:
 
 - The model expects videos with a consistent mouth region location (configured via `MOUTH_REGION` in `config.py`)
 - For best results, ensure videos are preprocessed consistently with training data
-- CTC decoding uses a greedy strategy (no beam search)
+- CTC decoding defaults to a greedy strategy; pass `--decoding beam` to `src.predict` or
+  `eval_sample.py` for beam search instead (see `BEAM_WIDTH` in `src/config.py`)
 - The vocabulary includes lowercase letters, digits, and space (modify `VOCAB` in `config.py` if needed)
 
 ## License
