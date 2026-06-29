@@ -46,3 +46,6 @@ DATA_ZIP_PATH = "data.zip"
 DATA_URL = None
 MODEL_SAVE_DIR = "models"
 DEFAULT_WEIGHTS = "models/weights_epoch_01.h5"
+
+# --- Prediction ---------------------------------------------------------
+BEAM_WIDTH = 100   # search width used by beam-search CTC decoding

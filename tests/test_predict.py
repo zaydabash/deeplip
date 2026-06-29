@@ -56,6 +56,21 @@ def test_decode_predictions_returns_empty_string_for_all_blank(vocab_lookups):
     assert decode_predictions(predictions, num_to_char) == ""
 
 
+def test_decode_predictions_beam_search_decodes_unambiguous_path(vocab_lookups):
+    char_to_num, num_to_char = vocab_lookups
+    num_classes = config.BLANK_TOKEN + 1
+
+    text = "hi"
+    char_ids = char_to_num(list(text)).numpy()
+
+    # One-hot, unambiguous predictions decode the same way under beam search
+    # as under greedy decoding.
+    sequence = [char_ids[0], config.BLANK_TOKEN, char_ids[1], config.BLANK_TOKEN]
+    predictions = _one_hot_predictions(sequence, num_classes)
+
+    assert decode_predictions(predictions, num_to_char, greedy=False, beam_width=10) == text
+
+
 def test_predict_clip_returns_decoded_string(tmp_path, vocab_lookups, model):
     _, num_to_char = vocab_lookups
 
@@ -63,6 +78,17 @@ def test_predict_clip_returns_decoded_string(tmp_path, vocab_lookups, model):
     write_test_video(video_path, num_frames=4)
 
     text = predict_clip(str(video_path), model, num_to_char)
+
+    assert isinstance(text, str)
+
+
+def test_predict_clip_with_beam_search_returns_decoded_string(tmp_path, vocab_lookups, model):
+    _, num_to_char = vocab_lookups
+
+    video_path = tmp_path / "clip.mp4"
+    write_test_video(video_path, num_frames=4)
+
+    text = predict_clip(str(video_path), model, num_to_char, greedy=False, beam_width=10)
 
     assert isinstance(text, str)
 
@@ -93,3 +119,18 @@ def test_main_runs_end_to_end_prediction(tmp_path, capsys):
     captured = capsys.readouterr()
     assert "PREDICTION RESULT" in captured.out
     assert "Predicted text:" in captured.out
+
+
+def test_main_runs_end_to_end_prediction_with_beam_search(tmp_path, capsys):
+    video_path = tmp_path / "clip.mp4"
+    write_test_video(video_path, num_frames=4)
+
+    main(
+        video_path=str(video_path),
+        weights_path=str(tmp_path / "missing.h5"),
+        greedy=False,
+        beam_width=10,
+    )
+
+    captured = capsys.readouterr()
+    assert "PREDICTION RESULT" in captured.out

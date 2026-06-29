@@ -33,12 +33,32 @@ def _greedy_decode_ids(pred_2d):
     return [t for t in collapsed if t != config.BLANK_TOKEN and t != 0]
 
 
-def decode_predictions(predictions, num_to_char):
-    """Greedy-decode model predictions ([1, time, classes] or [time, classes])."""
+def _beam_decode_ids(predictions, beam_width):
+    """Beam-search CTC decode a [1, time, classes] array into character ids."""
+    input_length = np.full(predictions.shape[0], predictions.shape[1])
+    decoded, _ = tf.keras.backend.ctc_decode(
+        predictions, input_length, greedy=False, beam_width=beam_width
+    )
+    ids = decoded[0].numpy()[0]
+    return [int(t) for t in ids if t not in (-1, 0)]
+
+
+def decode_predictions(predictions, num_to_char, greedy=True, beam_width=config.BEAM_WIDTH):
+    """Decode model predictions ([1, time, classes] or [time, classes]) to text.
+
+    greedy=True takes the best class at each timestep (fast, can be brittle on
+    short/ambiguous tokens). greedy=False runs CTC beam search instead, which
+    explores multiple candidate paths and tends to do better on those cases.
+    """
     pred = np.asarray(predictions)
-    if pred.ndim == 3:
-        pred = pred[0]
-    ids = _greedy_decode_ids(pred)
+    if pred.ndim == 2:
+        pred = pred[np.newaxis, ...]
+
+    if greedy:
+        ids = _greedy_decode_ids(pred[0])
+    else:
+        ids = _beam_decode_ids(pred, beam_width)
+
     if not ids:
         return ""
     chars = num_to_char(tf.constant(ids, dtype=tf.int64)).numpy()
@@ -59,20 +79,20 @@ def load_model(weights_path=config.DEFAULT_WEIGHTS):
     return model
 
 
-def predict_clip(video_path, model, num_to_char):
+def predict_clip(video_path, model, num_to_char, greedy=True, beam_width=config.BEAM_WIDTH):
     """Preprocess a video, run the model, and return the decoded text."""
     video = load_video(video_path)
     video = pad_video(video)
     video = np.expand_dims(video, axis=0)
     predictions = model.predict(video, verbose=0)
-    return decode_predictions(predictions, num_to_char)
+    return decode_predictions(predictions, num_to_char, greedy=greedy, beam_width=beam_width)
 
 
-def main(video_path, weights_path=config.DEFAULT_WEIGHTS):
+def main(video_path, weights_path=config.DEFAULT_WEIGHTS, greedy=True, beam_width=config.BEAM_WIDTH):
     """Run end-to-end prediction for a single video and print the result."""
     _, num_to_char = build_vocab_lookup()
     model = load_model(weights_path)
-    text = predict_clip(video_path, model, num_to_char)
+    text = predict_clip(video_path, model, num_to_char, greedy=greedy, beam_width=beam_width)
 
     print("=" * 40)
     print("PREDICTION RESULT")
@@ -89,5 +109,22 @@ if __name__ == "__main__":
         default=config.DEFAULT_WEIGHTS,
         help="Path to model weights (.h5).",
     )
+    parser.add_argument(
+        "--decoding",
+        choices=["greedy", "beam"],
+        default="greedy",
+        help="CTC decoding strategy (default: greedy).",
+    )
+    parser.add_argument(
+        "--beam_width",
+        type=int,
+        default=config.BEAM_WIDTH,
+        help=f"Beam width for beam-search decoding, ignored for greedy (default: {config.BEAM_WIDTH}).",
+    )
     args = parser.parse_args()
-    main(video_path=args.video_path, weights_path=args.weights)
+    main(
+        video_path=args.video_path,
+        weights_path=args.weights,
+        greedy=(args.decoding == "greedy"),
+        beam_width=args.beam_width,
+    )
