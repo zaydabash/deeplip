@@ -313,7 +313,8 @@ The training script automatically configures GPU memory growth to avoid OOM erro
 
 - **Automated test suite**: A pytest suite lives under `tests/`, covering `config`, `data`,
   `dataset`, `model`, `losses`, `callbacks`, `predict`, `train`, `visualize`, and `metrics` (64
-  tests, 93% coverage of `src/`). All fixtures are synthetic (generated on the fly with OpenCV), so
+  tests, 93-94% coverage of `src/` - varies slightly with whether TensorFlow detects a GPU on
+  the machine running them). All fixtures are synthetic (generated on the fly with OpenCV), so
   the suite runs fully offline without the gitignored `data/` directory. Run it with:
   ```bash
   pip install -r requirements-dev.txt
