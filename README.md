@@ -376,17 +376,17 @@ license covers this repository's code only, not any third-party data.
 ## Demo / Example
 
 The clip at the top of this README shows the preprocessed mouth region the model reads from.
-Example predictions from a model trained on GRID speaker `s1`:
+Example predictions from epoch 41 (greedy decoding) on GRID speaker `s1`:
 
 ```
+Ground truth: set white at v one again
+Predicted:    set white at one again
+
+Ground truth: place red in c four please
+Predicted:    place red in fo please
+
 Ground truth: bin blue at f two now
-Predicted:    bin b by o now
-
-Ground truth: bin red with a four please
-Predicted:    bin re with o please
-
-Ground truth: set green by j three again
-Predicted:    set gre byt sie again
+Predicted:    bin bl fo now
 ```
 
 Command words, colors, prepositions, and adverbs come through reliably; the single letter and
