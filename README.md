@@ -257,6 +257,19 @@ character error rate (CER) against the real `.align` transcripts, using `src/met
 python eval_sample.py --weights models/weights_epoch_41.h5 --pattern "data/s1/*.mpg" --num 10
 ```
 
+**Real numbers**, computed over all 1000 GRID speaker `s1` clips against epoch 41 (the
+checkpoint with the lowest validation loss, ~27.24):
+
+| Decoding | WER | CER |
+|---|---|---|
+| Greedy | 0.565 | 0.286 |
+| Beam search | 0.554 | 0.262 |
+
+Beam search improves both metrics, most noticeably on the short/ambiguous tokens (single letters,
+digits) called out below. These numbers are single-speaker, in-distribution results - the
+train/val split wasn't seeded, so it can't be reproduced as a clean held-out evaluation from
+outside the training run (see [PROJECT_STATUS.md](PROJECT_STATUS.md) for the full caveat).
+
 `src/metrics.py` also works standalone, if you want to score predictions some other way:
 
 ```python

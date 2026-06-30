@@ -54,8 +54,10 @@ def main(video_pattern="data/s1/*.mpg", epochs=EPOCHS):
 
     model = build_model()
     print_model_summary(model)
+    # The legacy optimizer avoids a known slowdown with tf.keras.optimizers.Adam
+    # on Apple Silicon (M1/M2/M3) GPUs; it's equally correct on other platforms.
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=INITIAL_LEARNING_RATE),
+        optimizer=tf.keras.optimizers.legacy.Adam(learning_rate=INITIAL_LEARNING_RATE),
         loss=ctc_loss_fn,
     )
 

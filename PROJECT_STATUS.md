@@ -29,9 +29,20 @@ A model has actually been trained on the real GRID corpus, not placeholder data:
    `models/weights_epoch_01.h5` through `weights_epoch_50.h5` exist and load cleanly against the
    current `build_model()` (correct `vocab_size + 2` / CTC-blank-token shape - these are not the
    old incompatible checkpoints that earlier versions of this doc warned about).
-3. **The best checkpoint by validation loss is epoch 41** (val_loss ~28.04); later epochs show
-   mild overfitting on the single-speaker split. The example predictions in this README's
+3. **The best checkpoint by validation loss is epoch 41** (val_loss ~27.24); later epochs show
+   mild overfitting on the single-speaker split (train loss keeps falling to ~11.75 by epoch 50
+   while val_loss plateaus around 27-28). The example predictions in this README's
    "Demo / Example" section come from running `eval_sample.py` against epoch 41.
+4. **Real WER/CER, computed over all 1000 `s1` clips against epoch 41:**
+   - Greedy decoding: **WER 0.565, CER 0.286**
+   - Beam search decoding: **WER 0.554, CER 0.262**
+
+   Beam search wins on both metrics, consistent with the expectation that exploring multiple
+   candidate paths helps on the short/ambiguous tokens (single letters, digits) that are the
+   model's weakest class. These numbers are from a single-speaker (`s1`) model evaluated on a
+   sample that includes clips used in training/validation (the train/val split's shuffle wasn't
+   seeded, so it can't be reproduced from outside the training run) - treat them as representative
+   of in-distribution performance on `s1`, not as a clean held-out/generalization number.
 
 **None of this is in git.** `data/`, `downloads/`, and `models/*.h5` are gitignored (~14GB+
 combined), so a fresh clone has no data and no trained model until you regenerate them yourself.
@@ -51,6 +62,6 @@ combined), so a fresh clone has no data and no trained model until you regenerat
 
 - Only one GRID speaker (`s1`) has been used for training; speaker-independent results across
   multiple speakers are untested.
-- WER/CER have not yet been computed and reported as a single number for `s1` - `eval_sample.py`
-  prints per-clip WER/CER and an average, but no run's output has been recorded in this repo.
+- The WER/CER numbers above are not a clean held-out evaluation (see note above) - a proper
+  train/val/test split with a fixed seed would be needed for a generalization number.
 - `s21.zip` is missing from the Zenodo download and hasn't been re-fetched.
